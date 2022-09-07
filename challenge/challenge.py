@@ -11,6 +11,9 @@ class HourlyTask:
     #: From when should this task start occurring?
     start_from: datetime
 
+    #: Tracker for the current time, uninitialised until .schedule
+    current_time: Union[datetime, None] = None
+
     #: Until when should this task occur?
     repeat_until: Union[datetime, None] = None
 
@@ -20,6 +23,7 @@ class HourlyTask:
     #: What if any is the last (most recent) time that has been done for this
     #: task?
     latest_done: Union[datetime, None] = None
+    
 
     @property
     def next_to_do(self) -> Union[datetime, None]:
@@ -29,9 +33,10 @@ class HourlyTask:
         #  for backfill find earliest_done, return none if equal to start_from,
         #  if not then subtract one hour and return datetime
 
-        # returning recent
-        if (self.latest_done != self.repeat_until) :
-            next = self.latest_done + timedelta(hours=1)
+        
+        # returning recent : check task is allowed to complete further (repeat_until)
+        if (self.latest_done != self.current_time) and (self.latest_done != self.repeat_until) :
+            next = self.current_time - timedelta(hours=1)
             return next
         # returning backfill
         elif (self.earliest_done != self.start_from) :
@@ -42,10 +47,7 @@ class HourlyTask:
 
     def schedule(self, when: datetime) -> None:
         """Schedule this task at the 'when' time, update local time markers."""
-
-        # @TODO update latest_done and earliest_done to reflect new time from when
-        
-        raise NotImplementedError("Fill me in!")
+        self.current_time = when
 
 
 class Scheduler:
