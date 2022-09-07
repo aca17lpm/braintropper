@@ -24,10 +24,27 @@ class HourlyTask:
     @property
     def next_to_do(self) -> Union[datetime, None]:
         """Return the next datetime that needs doing."""
-        raise NotImplementedError("Fill me in!")
+
+        # @TODO for recent find latest_done, if not equal to repeat_until, return plus one hour
+        #  for backfill find earliest_done, return none if equal to start_from,
+        #  if not then subtract one hour and return datetime
+
+        # returning recent
+        if (self.latest_done != self.repeat_until) :
+            next = self.latest_done + timedelta(hours=1)
+            return next
+        # returning backfill
+        elif (self.earliest_done != self.start_from) :
+            next = self.earliest_done - timedelta(hours=1)
+            return next
+        else :
+            return None
 
     def schedule(self, when: datetime) -> None:
         """Schedule this task at the 'when' time, update local time markers."""
+
+        # @TODO update latest_done and earliest_done to reflect new time from when
+        
         raise NotImplementedError("Fill me in!")
 
 
@@ -48,6 +65,7 @@ class Scheduler:
 
     def get_tasks_to_do(self) -> List[HourlyTask]:
         """Get the list of tasks that need doing."""
+        # @TODO get all tasks where next_to_do != None
         return []
 
     def schedule_tasks(self) -> None:
