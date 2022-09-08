@@ -12,7 +12,7 @@ class HourlyTask:
     start_from: datetime
 
     #: Tracker for the current time, uninitialised until .schedule
-    current_time: Union[datetime, None] = None
+    current_time: 
 
     #: Until when should this task occur?
     repeat_until: Union[datetime, None] = None
@@ -35,8 +35,8 @@ class HourlyTask:
 
         
         # returning recent : check task is allowed to complete further (repeat_until)
-        if (self.latest_done != self.current_time) and (self.latest_done != self.repeat_until) :
-            next = self.current_time - timedelta(hours=1)
+        if (self.latest_done != self.repeat_until) :
+            next = self.latest_done + timedelta(hours=1)
             return next
         # returning backfill
         elif (self.earliest_done != self.start_from) :
@@ -47,7 +47,11 @@ class HourlyTask:
 
     def schedule(self, when: datetime) -> None:
         """Schedule this task at the 'when' time, update local time markers."""
-        self.current_time = when
+        # when describes the previous complete hour
+        # to my understanding, this method updates the latest/earliest done parameters,
+        # completing a period of work
+
+        self.latest_done = when
 
 
 class Scheduler:
@@ -68,7 +72,14 @@ class Scheduler:
     def get_tasks_to_do(self) -> List[HourlyTask]:
         """Get the list of tasks that need doing."""
         # @TODO get all tasks where next_to_do != None
-        return []
+        tasks_to_do = []
+
+        # iterate through tasks, returning the ones which have a next_to_do
+        for task in self.task_store:
+            if (task.next_to_do != None) :
+                tasks_to_do.append(task)
+
+        return tasks_to_do
 
     def schedule_tasks(self) -> None:
         """Schedule the tasks.
@@ -80,6 +91,8 @@ class Scheduler:
         now = datetime.utcnow()
         now_hour_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         last_hour_start = now_hour_start - timedelta(hours=1)
+
+        # puts start of last period into task via schedule as the "when" parameter
         [task.schedule(last_hour_start) for task in tasks]
 
 
