@@ -11,9 +11,6 @@ class HourlyTask:
     #: From when should this task start occurring?
     start_from: datetime
 
-    #: Tracker for the current time, uninitialised until .schedule
-    current_time: 
-
     #: Until when should this task occur?
     repeat_until: Union[datetime, None] = None
 
@@ -72,14 +69,19 @@ class Scheduler:
     def get_tasks_to_do(self) -> List[HourlyTask]:
         """Get the list of tasks that need doing."""
         # @TODO get all tasks where next_to_do != None
-        tasks_to_do = []
+        task_times = dict()
 
         # iterate through tasks, returning the ones which have a next_to_do
         for task in self.task_store:
-            if (task.next_to_do != None) :
-                tasks_to_do.append(task)
+            if (task.next_to_do != None):
+                # add task to dictionary with key as task object and next_to_do as value
+                task_times[task] = task.next_to_do
+        
+        # create a list of tasks sorted by to_do times
+        sorted_tasks = sorted(task_times, key=task_times.get)
 
-        return tasks_to_do
+        # create a dictionary with tasks and their next_to_do
+        return sorted_tasks
 
     def schedule_tasks(self) -> None:
         """Schedule the tasks.
@@ -94,6 +96,10 @@ class Scheduler:
 
         # puts start of last period into task via schedule as the "when" parameter
         [task.schedule(last_hour_start) for task in tasks]
+
+        # in order to sort tasks in terms of priority, order by to_do : best done in get_tasks_to_do
+
+
 
 
 @dataclass
