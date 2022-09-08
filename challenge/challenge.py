@@ -29,14 +29,13 @@ class HourlyTask:
         # @TODO for recent find latest_done, if not equal to repeat_until, return plus one hour
         #  for backfill find earliest_done, return none if equal to start_from,
         #  if not then subtract one hour and return datetime
-
         
         # returning recent : check task is allowed to complete further (repeat_until)
-        if (self.latest_done != self.repeat_until) :
+        if (self.latest_done < self.repeat_until) :
             next = self.latest_done + timedelta(hours=1)
             return next
         # returning backfill
-        elif (self.earliest_done != self.start_from) :
+        elif (self.earliest_done > self.start_from) :
             next = self.earliest_done - timedelta(hours=1)
             return next
         else :
@@ -80,7 +79,7 @@ class Scheduler:
         # create a list of tasks sorted by to_do times
         sorted_tasks = sorted(task_times, key=task_times.get)
 
-        # create a dictionary with tasks and their next_to_do
+        # return sorted tasks
         return sorted_tasks
 
     def schedule_tasks(self) -> None:
@@ -98,8 +97,6 @@ class Scheduler:
         [task.schedule(last_hour_start) for task in tasks]
 
         # in order to sort tasks in terms of priority, order by to_do : best done in get_tasks_to_do
-
-
 
 
 @dataclass
