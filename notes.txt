@@ -1,0 +1,13 @@
+The challenge:
+Create a scheduler to manage "tasks" that work on periods of data (period = 1 hour), with prioritisation of tasks
+
+Tasks from README:
+    Filter tasks to find what needs doing
+    Schedule filtered tasks to prioritise those that have the nearest (i.e. most recent) to-do period right now
+    Schedule filtered tasks to back fill periods when there are no recent to-do periods
+    Scheduled tasks should keep track of their progress (forward and backward in time)
+
+Tasks for me:
+
+    1. Filter tasks: find tasks where start_from < earliest_done, or latest_done < repeat_until, 
+    2. Prioritise tasks where when != to latest_done, as most recent must be done first before backfill
